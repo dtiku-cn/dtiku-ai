@@ -1,54 +1,39 @@
-pub mod proto {
-    tonic::include_proto!("embedding");
-}
-
-use super::AnyhowToStatus;
-use crate::plugins::fastembed::TxtEmbedding;
-use proto::embedding_service_server::{EmbeddingService, EmbeddingServiceServer};
-use proto::{BatchTextReq, Embedding, TensorResp, TextReq};
+use crate::plugins::fastembed::{ImgEmbedding, TxtEmbedding};
+use anyhow::Context;
 use spring::plugin::service::Service;
-use tonic::{Code, Request, Response, Status};
 
 #[derive(Clone, Service)]
-#[service(grpc = "EmbeddingServiceServer")]
 pub struct EmbeddingServiceImpl {
     #[inject(component)]
-    pub text_embedding: TxtEmbedding,
-    // #[inject(component)]
-    // pub image_embedding: ImgEmbedding,
+    text_embedding: TxtEmbedding,
+    #[inject(component)]
+    image_embedding: ImgEmbedding,
 }
 
-#[tonic::async_trait]
-impl EmbeddingService for EmbeddingServiceImpl {
-    async fn text_embedding(
-        &self,
-        request: Request<TextReq>,
-    ) -> Result<Response<Embedding>, Status> {
-        let text = request.into_inner().text;
-        let mut embedding = self
+impl EmbeddingServiceImpl {
+    pub async fn text_embedding(&self, text: &str) -> anyhow::Result<Vec<f32>> {
+        let mut embeddings = self
             .text_embedding
             .embed(vec![text], None)
-            .map_err(|e| e.to_status(Code::Internal))?;
-        let embedding = embedding.remove(0);
-        Ok(Response::new(Embedding {
-            embedding: embedding.into(),
-        }))
+            .context("txt embedding failed")?;
+        let embedding = embeddings.remove(0);
+        Ok(embedding)
     }
 
-    async fn batch_text_embedding(
-        &self,
-        request: Request<BatchTextReq>,
-    ) -> Result<Response<TensorResp>, Status> {
-        let BatchTextReq { texts, batch_size } = request.into_inner();
+    pub async fn batch_text_embedding(&self, texts: Vec<String>) -> anyhow::Result<Vec<Vec<f32>>> {
         let embeddings = self
             .text_embedding
-            .embed(texts, Some(batch_size as usize))
-            .map_err(|e| e.to_status(Code::Internal))?;
-        Ok(Response::new(TensorResp {
-            embeddings: embeddings
-                .into_iter()
-                .map(|embedding| Embedding { embedding })
-                .collect(),
-        }))
+            .embed(texts, None)
+            .context("txt embedding failed")?;
+        Ok(embeddings)
+    }
+
+    pub async fn img_embedding(&self, img: &[u8]) -> anyhow::Result<Vec<f32>> {
+        let mut embeddings = self
+            .image_embedding
+            .embed_bytes(&[img], None)
+            .context("img embedding failed")?;
+        let embedding = embeddings.remove(0);
+        Ok(embedding)
     }
 }
