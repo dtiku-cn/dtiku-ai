@@ -1,0 +1,27 @@
+[package]
+name = "dtiku-ai"
+version = "0.0.1"
+edition = "2021"
+publish = ["crates-io"]
+
+[[bin]]
+name = "ai"
+path = "src/main.rs"
+
+[dependencies]
+spring = "0.4"
+spring-grpc = "0.4"
+spring-redis = "0.4"
+spring-opentelemetry = "0.4"
+tokio = { version = "1", features = ["full"] }
+serde = "1"
+serde_json = "1"
+serde_with = "3"
+anyhow = "1"
+fastembed = { version = "4.9", features = ["ort-load-dynamic"] }
+derive_more = { version = "2", features = ["deref", "deref_mut"] }
+prost = "0.13"
+tonic = "0.13"
+
+[build-dependencies]
+tonic-build = "0.13"

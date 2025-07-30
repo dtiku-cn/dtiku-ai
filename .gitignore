@@ -1,0 +1,24 @@
+debug/
+target/
+
+**/*.rs.bk
+
+*.pdb
+**/*.env
+/*.dot
+**/.env
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.hf-cache/
+
+### IDEA ###
+*.iml
+.idea/
+**/.DS_Store
+docker/postgresql

@@ -1,0 +1,43 @@
+syntax = "proto3";
+package artalk;
+
+service ArtalkService {
+    rpc auth_identity(UserReq) returns (UserResp);
+
+    rpc comment_user(CommentReq) returns (UserIdResp);
+
+    rpc vote_stats(PageReq) returns (VoteStats);
+
+    rpc batch_vote_stats(MultiPageReq) returns (MultiVoteStats);
+}
+
+message UserReq{
+    int32 user_id=1;
+}
+
+message UserResp{
+    int32 user_id=1;
+    string remote_uid=2;
+    string token=3;
+}
+
+message CommentReq{
+    int64 comment_id=1;
+}
+message UserIdResp{
+    int32 user_id=1;
+}
+message PageReq{
+    string page_key=1;
+}
+message VoteStats{
+    string page_key = 1;
+    int64 vote_up = 2;
+    int64 vote_down = 3;
+}
+message MultiPageReq{
+    repeated string pages_key=1;
+}
+message MultiVoteStats{
+    repeated VoteStats stats=1;
+}
