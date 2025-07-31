@@ -17,13 +17,13 @@ FROM python:3.11-slim as downloader
 
 RUN pip install --no-cache-dir huggingface_hub
 # 设置模型路径和缓存目录
-ENV HF_HOME=/hf_cache
+ENV HF_HOME=/hf-cache
 RUN mkdir -p $HF_HOME
 
 # 下载模型文件（snapshot 下载可选）
 RUN python -c "from huggingface_hub import snapshot_download; \
-    snapshot_download(repo_id='intfloat/multilingual-e5-base', cache_dir='/hf_cache/sentence-transformers'); \
-    snapshot_download(repo_id='Qdrant/resnet50-onnx', cache_dir='/hf_cache/resnet');"
+    snapshot_download(repo_id='intfloat/multilingual-e5-base', cache_dir='/hf-cache/sentence-transformers'); \
+    snapshot_download(repo_id='Qdrant/resnet50-onnx', cache_dir='/hf-cache/resnet');"
 
 ###################### runner container
 FROM debian:bookworm-slim
@@ -53,7 +53,7 @@ ENV RUST_LOG=info
 
 WORKDIR /runner
 
-COPY --from=downloader /hf_cache ./.hf_cache
+COPY --from=downloader /hf-cache ./.hf-cache
 COPY --from=builder /build/target/release/ai ./dtiku-ai
 
 COPY ./config ./config
