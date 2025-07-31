@@ -56,6 +56,7 @@ WORKDIR /runner
 COPY --from=downloader /hf-cache ./.hf-cache
 COPY --from=builder /build/target/release/ai ./dtiku-ai
 
+COPY ./static ./static
 COPY ./config ./config
 
 EXPOSE 7860
