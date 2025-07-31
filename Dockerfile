@@ -23,7 +23,7 @@ RUN mkdir -p $HF_HOME
 # 下载模型文件（snapshot 下载可选）
 RUN python -c "from huggingface_hub import snapshot_download; \
     snapshot_download(repo_id='intfloat/multilingual-e5-base', cache_dir='/hf_cache/sentence-transformers'); \
-    snapshot_download(repo_id='Qdrant/resnet50-onnx', cache_dir='/hf_cache/resnet'); \"
+    snapshot_download(repo_id='Qdrant/resnet50-onnx', cache_dir='/hf_cache/resnet');"
 
 ###################### runner container
 FROM debian:bookworm-slim
