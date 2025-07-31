@@ -16,6 +16,7 @@ target/
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 .hf-cache/
+hf_cache/
 
 ### IDEA ###
 *.iml

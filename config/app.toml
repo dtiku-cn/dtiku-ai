@@ -1,9 +1,9 @@
 [huggingface]
-cache_dir = "${HF_HOME:~/.hf-cache}"
+cache_dir = "${HF_HOME:./.hf-cache}"
 text_model = "${TEXT_EMBEDDING_MODEL:intfloat/multilingual-e5-base}"
 img_model = "${IMAGE_EMBEDDING_MODEL:Qdrant/resnet50-onnx}"
 
-[grpc]
+[web]
 port = 7860
 
 [logger]

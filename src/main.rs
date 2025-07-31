@@ -5,14 +5,15 @@ mod service;
 use crate::service::embedding::EmbeddingServiceImpl;
 use axum::{extract::Multipart, response::IntoResponse, Json};
 use plugins::fastembed::EmbeddingPlugin;
-use spring::App;
+use spring::{auto_config, App};
 use spring_web::{
     axum,
     error::{KnownWebError, Result},
     extractor::Component,
-    post, WebPlugin,
+    post, WebConfigurator, WebPlugin,
 };
 
+#[auto_config(WebConfigurator)]
 #[tokio::main]
 async fn main() {
     App::new()
@@ -26,7 +27,7 @@ async fn main() {
 #[post("/text_embedding")]
 async fn text_embedding(
     Component(embedding): Component<EmbeddingServiceImpl>,
-    text: String,
+    Json(text): Json<String>,
 ) -> Result<impl IntoResponse> {
     Ok(Json(embedding.text_embedding(&text).await?))
 }

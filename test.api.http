@@ -1,0 +1,5 @@
+###
+POST http://localhost:7860/batch_text_embedding
+Content-Type: application/json
+
+["查看端口占用情况的方法取决于你使用的操作系统"]
