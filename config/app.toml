@@ -6,6 +6,9 @@ img_model = "${IMAGE_EMBEDDING_MODEL:Qdrant/resnet50-onnx}"
 [web]
 port = 7860
 
+[web.middlewares]
+static = { enable = true, uri = "/" }
+
 [logger]
 # level = "debug"
 pretty_backtrace = true

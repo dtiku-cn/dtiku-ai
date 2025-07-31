@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Embedding API Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    section { margin-bottom: 30px; }
+    label { display: block; margin: 10px 0 5px; font-weight: bold; }
+    textarea, input[type="text"], input[type="file"] { width: 100%; max-width: 600px; padding: 6px; }
+    button { margin-top: 10px; padding: 6px 12px; }
+    pre { background: #f0f0f0; padding: 10px; max-width: 600px; white-space: pre-wrap; word-break: break-word; }
+  </style>
+</head>
+<body>
+
+<h1>Embedding API 调用示例</h1>
+
+<section>
+  <h2>单文本 Embedding</h2>
+  <label for="text">输入文本:</label>
+  <textarea id="text" rows="3" placeholder="输入文本"></textarea>
+  <button onclick="callTextEmbedding()">提交</button>
+  <pre id="textResult"></pre>
+</section>
+
+<section>
+  <h2>批量文本 Embedding</h2>
+  <label for="batchText">输入 JSON 数组文本（示例：["文本1","文本2"]）:</label>
+  <textarea id="batchText" rows="4" placeholder='["文本1", "文本2"]'></textarea>
+  <button onclick="callBatchTextEmbedding()">提交</button>
+  <pre id="batchTextResult"></pre>
+</section>
+
+<section>
+  <h2>图片 Embedding</h2>
+  <label for="imgFile">上传图片:</label>
+  <input type="file" id="imgFile" accept="image/*" />
+  <button onclick="callImgEmbedding()">提交</button>
+  <pre id="imgResult"></pre>
+</section>
+
+<script>
+  const baseUrl = ''; // 如果接口不在同域，填完整地址，比如 http://localhost:3000
+
+  async function callTextEmbedding() {
+    const text = document.getElementById('text').value.trim();
+    if (!text) {
+      alert('请输入文本');
+      return;
+    }
+    const resEl = document.getElementById('textResult');
+    resEl.textContent = '请求中...';
+    try {
+      const resp = await fetch(baseUrl + '/text_embedding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(text),
+      });
+      if (!resp.ok) throw new Error(`HTTP错误 ${resp.status}`);
+      const data = await resp.json();
+      resEl.textContent = JSON.stringify(data, null, 2);
+    } catch (e) {
+      resEl.textContent = '请求失败: ' + e.message;
+    }
+  }
+
+  async function callBatchTextEmbedding() {
+    const input = document.getElementById('batchText').value.trim();
+    const resEl = document.getElementById('batchTextResult');
+    resEl.textContent = '请求中...';
+    let texts;
+    try {
+      texts = JSON.parse(input);
+      if (!Array.isArray(texts)) throw new Error('请输入 JSON 数组');
+    } catch {
+      resEl.textContent = '输入不是有效的 JSON 数组';
+      return;
+    }
+    try {
+      const resp = await fetch(baseUrl + '/batch_text_embedding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(texts),
+      });
+      if (!resp.ok) throw new Error(`HTTP错误 ${resp.status}`);
+      const data = await resp.json();
+      resEl.textContent = JSON.stringify(data, null, 2);
+    } catch (e) {
+      resEl.textContent = '请求失败: ' + e.message;
+    }
+  }
+
+  async function callImgEmbedding() {
+    const fileInput = document.getElementById('imgFile');
+    const resEl = document.getElementById('imgResult');
+    if (fileInput.files.length === 0) {
+      alert('请选择图片文件');
+      return;
+    }
+    const file = fileInput.files[0];
+    resEl.textContent = '请求中...';
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const resp = await fetch(baseUrl + '/img_embedding', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!resp.ok) throw new Error(`HTTP错误 ${resp.status}`);
+      const data = await resp.json();
+      resEl.textContent = JSON.stringify(data, null, 2);
+    } catch (e) {
+      resEl.textContent = '请求失败: ' + e.message;
+    }
+  }
+</script>
+
+</body>
+</html>
